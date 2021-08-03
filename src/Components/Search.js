@@ -3,9 +3,11 @@ import "./../Styling/Search.css";
 import SearchResultCard from './SearchResultCard';
 import { KeyboardBackspace } from '@material-ui/icons';
 import { auth } from '../firebase';
+import firebase from 'firebase';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateState } from "./../redux/reducers/searchReducer";
 import axios from "./../axios";
+import { Link, useHistory} from 'react-router-dom';
 
 function Search(){
 
@@ -16,6 +18,12 @@ function Search(){
     const [searchInput, setSearchInput] = useState("");
 
     useEffect(async() => {
+        const user = firebase.auth().currentUser;
+        if(user){
+            dispatch(updateState({CurrentUser: user}))
+        } else {
+            alert("no user")
+        }
         await axios.get("/Users/Random")
         .then(users => {
             dispatch(updateState({UsersFound: users.data}));
@@ -39,7 +47,9 @@ function Search(){
         <div className="search">
             <header className="search__field">
                 <input placeholder="...." onChange={handleInput}/>
-                <KeyboardBackspace/>
+                <Link to={`/Chat/${CurrentUser.uid}`}>
+                    <KeyboardBackspace/>
+                </Link>
             </header>
             <div className="search__results">
                 {UsersFound.length !== 0?  UsersFound.map((user, i) => {
