@@ -3,8 +3,8 @@ import "./../Styling/LoginSignUp.css";
 import firebase from 'firebase';
 import { auth, storage } from '../firebase';
 import { useSelector, useDispatch} from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { updateState } from "./../redux/reducers/userReducer";
+import { useHistory } from 'react-router';
 import axios from "./../axios";
 
 function LoginSignUp(){
@@ -14,7 +14,9 @@ function LoginSignUp(){
     const Email = useSelector((state) => state.userReducer.Email);
     const Phone = useSelector((state) => state.userReducer.Phone);
     const HeaderImage = useSelector((state) => state.userReducer.HeaderImage);
+    const CurrentUser = useSelector((state) => state.userReducer.CurrentUser);
     const dispatch = useDispatch();
+    const history = useHistory();
     
 
     const [displayLogin, setDisplayLogin] = useState(true);
@@ -42,12 +44,14 @@ function LoginSignUp(){
             storage.ref("profilePictures").child(HeaderImage.name).getDownloadURL()
             .then((url) => {
                 //then take care of adding first to mongodb
-                // axios.post("/Users/New", {
-                //     Username: Username,
-                //     Email: Email,
-                //     Phone: Phone,
-                //     HeaderImage: url
-                // })
+                axios.post("/Users/New", {
+                    Username: Username,
+                    Email: Email,
+                    Phone: Phone,
+                    HeaderImage: url,
+                    FirebaseID: "hello",
+                    Status: "Active"
+                })
                 //then add user to firebase auth
                 auth.createUserWithEmailAndPassword(Email, Password)
                 .then((authUser) => {      
@@ -73,7 +77,9 @@ function LoginSignUp(){
         console.log(Email)
         auth.signInWithEmailAndPassword(Email, Password)
         .then((user) => {
-            console.log(user)
+            dispatch(updateState({CurrentUser: user.user}));
+            history.push(`/Chat/${user.user.uid}`)
+            console.log(user.user.uid)
         })
         .catch(err => console.log(err.message))
     }

@@ -1,12 +1,6 @@
-
 const initialState = {
-    Username: 'Hi',
-    Password: '',
-    Email: '',
-    Phone: '',
-    HeaderImage: '',
-    CurrentUser: [],
-    SearchedUser: []
+    SearchInput: '',
+    UsersFound: ['']
 };
 
 
@@ -18,8 +12,6 @@ export const updateState = (e) => {
         payload: e
     }
 };
-
-
 
 export default function reducer(state = initialState, action){
     const {type, payload} = action;
