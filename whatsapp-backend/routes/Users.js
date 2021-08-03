@@ -39,6 +39,18 @@ Router.route("/Search/:UserEmail").get((req, res) => {
     .catch(err => {
         res.status(500).send(err)
     })
+});
+
+
+Router.route("/AddNewFriend").put((req, res) => {
+    const {CurrentUser, UserToFriend} = req.body;
+    // first add to current user
+    console.log(CurrentUser, UserToFriend)
+    Users.findOneAndUpdate({Email: CurrentUser.Email}, {$push: {Friends: ["hello"]}})
+    .then(() => {
+        // now time to do the same, just reversed
+        console.log("friend has beenadded")
+    })
 })
 
 module.exports = Router;
